@@ -150,23 +150,35 @@ type ContextWrapper struct {
 }
 
 func (r ContextWrapper) Parent() *PID {
+	p := r.Context.Parent()
+	if p == nil {
+		return nil
+	}
 	return &PID{
 		context: r.Context,
-		PID:     r.Context.Parent(),
+		PID:     p,
 	}
 }
 
 func (r ContextWrapper) Self() *PID {
+	p := r.Context.Self()
+	if p == nil {
+		return nil
+	}
 	return &PID{
 		context: r.Context,
-		PID:     r.Context.Self(),
+		PID:     p,
 	}
 }
 
 func (r ContextWrapper) Sender() *PID {
+	p := r.Context.Sender()
+	if p == nil {
+		return nil
+	}
 	return &PID{
 		context: r.Context,
-		PID:     r.Context.Sender(),
+		PID:     p,
 	}
 }
 
