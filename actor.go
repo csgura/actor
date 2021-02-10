@@ -56,3 +56,5 @@ func (props *Props) WithReceiverMiddleware(middleware ...ReceiverMiddleware) *Pr
 
 	return &Props{props.Props.WithReceiverMiddleware(m...)}
 }
+
+type ActorFunc = ReceiveFunc

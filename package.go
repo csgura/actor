@@ -51,6 +51,10 @@ func (r *PID) Stop() {
 	r.context.(protoStopperPart).Stop(r.PID)
 }
 
+func (r *PID) GracefulStop() {
+	r.context.(protoStopperPart).StopFuture(r.PID).Wait()
+}
+
 func (r *PID) RequestFuture(message interface{}, timeout time.Duration) *Future {
 	return r.context.RequestFuture(r.PID, message, timeout)
 }
@@ -96,6 +100,14 @@ func FromProducer(producer Producer) *Props {
 		return &actorWrapper{a}
 	})
 	return &Props{props.WithReceiverMiddleware(messageConverter)}
+}
+
+func FromFunc(f ReceiveFunc) *Props {
+	props := FromProducer(func() Actor {
+		return f
+	})
+	return props
+
 }
 
 type ReceiveTimeout = actor.ReceiveTimeout
