@@ -1,6 +1,8 @@
 package actor
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/AsynkronIT/protoactor-go/actor"
@@ -155,7 +157,7 @@ func (r ContextWrapper) Parent() *PID {
 		return nil
 	}
 	return &PID{
-		context: r.Context,
+		Context: r.Context,
 		PID:     p,
 	}
 }
@@ -166,7 +168,7 @@ func (r ContextWrapper) Self() *PID {
 		return nil
 	}
 	return &PID{
-		context: r.Context,
+		Context: r.Context,
 		PID:     p,
 	}
 }
@@ -177,7 +179,7 @@ func (r ContextWrapper) Sender() *PID {
 		return nil
 	}
 	return &PID{
-		context: r.Context,
+		Context: r.Context,
 		PID:     p,
 	}
 }
@@ -227,23 +229,24 @@ func (r ContextWrapper) PoisonFuture(pid *PID) *Future {
 
 func (r ContextWrapper) Spawn(props *Props) *PID {
 	return &PID{
-		context: r.Context,
+		Context: r.Context,
 		PID:     r.Context.Spawn(props.Props),
 	}
 }
 func (r ContextWrapper) SpawnPrefix(props *Props, prefix string) *PID {
 	return &PID{
-		context: r.Context,
+		Context: r.Context,
 		PID:     r.Context.SpawnPrefix(props.Props, prefix),
 	}
 }
+
 func (r ContextWrapper) SpawnNamed(props *Props, id string) (*PID, error) {
 	pid, err := r.Context.SpawnNamed(props.Props, id)
 	if pid == nil {
 		return nil, err
 	}
 	return &PID{
-		context: r.Context,
+		Context: r.Context,
 		PID:     pid,
 	}, err
 }
@@ -269,7 +272,7 @@ func (r ContextWrapper) Children() []*PID {
 	ret := make([]*PID, len(c))
 	for i := range c {
 		ret[i] = &PID{
-			context: r.Context,
+			Context: r.Context,
 			PID:     c[i],
 		}
 	}
@@ -282,14 +285,14 @@ type ReceiverContextWrapper struct {
 
 func (r ReceiverContextWrapper) Parent() *PID {
 	return &PID{
-		context: r.ReceiverContext.(actor.Context),
+		Context: r.ReceiverContext.(actor.Context),
 		PID:     r.ReceiverContext.Parent(),
 	}
 }
 
 func (r ReceiverContextWrapper) Self() *PID {
 	return &PID{
-		context: r.ReceiverContext.(actor.Context),
+		Context: r.ReceiverContext.(actor.Context),
 		PID:     r.ReceiverContext.Self(),
 	}
 }
@@ -304,4 +307,35 @@ func (r ReceiverContextWrapper) protoReceiverContext() actor.ReceiverContext {
 
 func (r ReceiverContextWrapper) ActorSystem() *ActorSystem {
 	return wrapActorSystem(r.ReceiverContext.ActorSystem())
+}
+
+func WrapContext(c interface {
+	Message() interface{}
+}) Context {
+
+	switch t := c.(type) {
+	case actor.Context:
+		return &ContextWrapper{t}
+	case Context:
+		return t
+	}
+
+	return nil
+}
+
+func UnwrapContext(c interface {
+	Message() interface{}
+}) actor.Context {
+
+	switch t := c.(type) {
+	case *ContextWrapper:
+		return t.Context
+	case ContextWrapper:
+		return t.Context
+	case actor.Context:
+		return t
+	}
+
+	fmt.Fprintf(os.Stderr, "unkown type %T\n", c)
+	return nil
 }

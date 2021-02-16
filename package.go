@@ -19,12 +19,12 @@ func (r SupervisorStrategyFunc) HandleFailure(actorSystem *ActorSystem, supervis
 type Supervisor = actor.Supervisor
 
 type PID struct {
-	context actor.SenderContext
+	Context actor.SenderContext
 	*actor.PID
 }
 
 func (r *PID) Tell(message interface{}) {
-	r.context.Send(r.PID, message)
+	r.Context.Send(r.PID, message)
 }
 
 type Future = actor.Future
@@ -44,19 +44,19 @@ type protoStopperPart interface {
 }
 
 func (r *PID) StopFuture() *Future {
-	return r.context.(protoStopperPart).StopFuture(r.PID)
+	return r.Context.(protoStopperPart).StopFuture(r.PID)
 }
 
 func (r *PID) Stop() {
-	r.context.(protoStopperPart).Stop(r.PID)
+	r.Context.(protoStopperPart).Stop(r.PID)
 }
 
 func (r *PID) GracefulStop() {
-	r.context.(protoStopperPart).StopFuture(r.PID).Wait()
+	r.Context.(protoStopperPart).StopFuture(r.PID).Wait()
 }
 
 func (r *PID) RequestFuture(message interface{}, timeout time.Duration) *Future {
-	return r.context.RequestFuture(r.PID, message, timeout)
+	return r.Context.RequestFuture(r.PID, message, timeout)
 }
 
 type RestartStatistics = actor.RestartStatistics
@@ -114,3 +114,14 @@ type ReceiveTimeout = actor.ReceiveTimeout
 
 type SystemMessage = actor.SystemMessage
 type AutoReceiveMessage = actor.AutoReceiveMessage
+
+func WrapPID(asys *actor.ActorSystem, pid *actor.PID) *PID {
+	if pid == nil {
+		return nil
+	}
+
+	return &PID{
+		Context: asys.Root,
+		PID:     pid,
+	}
+}

@@ -14,7 +14,7 @@ func messageConverter(next actor.ReceiverFunc) actor.ReceiverFunc {
 		case *actor.Terminated:
 			envelope.Message = &Terminated{
 				Who: &PID{
-					context: c.(actor.SenderContext),
+					Context: c.(actor.SenderContext),
 					PID:     msg.Who,
 				},
 				AddressTerminated: msg.AddressTerminated,
