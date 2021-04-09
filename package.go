@@ -107,7 +107,21 @@ func FromFunc(f ReceiveFunc) *Props {
 		return f
 	})
 	return props
+}
 
+func PropsFromProducer(producer Producer) *Props {
+	props := actor.PropsFromProducer(func() actor.Actor {
+		a := producer()
+		return &actorWrapper{a}
+	})
+	return &Props{props.WithReceiverMiddleware(messageConverter)}
+}
+
+func PropsFromFunc(f ReceiveFunc) *Props {
+	props := FromProducer(func() Actor {
+		return f
+	})
+	return props
 }
 
 type ReceiveTimeout = actor.ReceiveTimeout
