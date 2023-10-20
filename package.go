@@ -3,7 +3,7 @@ package actor
 import (
 	"time"
 
-	"github.com/AsynkronIT/protoactor-go/actor"
+	"github.com/asynkron/protoactor-go/actor"
 )
 
 type SupervisorStrategy interface {
@@ -99,7 +99,7 @@ func FromProducer(producer Producer) *Props {
 		a := producer()
 		return &actorWrapper{a}
 	})
-	return &Props{props.WithReceiverMiddleware(messageConverter)}
+	return &Props{props.Configure(actor.WithReceiverMiddleware(messageConverter))}
 }
 
 func FromFunc(f ReceiveFunc) *Props {
@@ -114,7 +114,7 @@ func PropsFromProducer(producer Producer) *Props {
 		a := producer()
 		return &actorWrapper{a}
 	})
-	return &Props{props.WithReceiverMiddleware(messageConverter)}
+	return &Props{props.Configure(actor.WithReceiverMiddleware(messageConverter))}
 }
 
 func PropsFromFunc(f ReceiveFunc) *Props {

@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/AsynkronIT/protoactor-go/actor"
+	"github.com/asynkron/protoactor-go/actor"
 )
 
 type SenderContext interface {
@@ -71,7 +71,7 @@ type basePart interface {
 	// Forward forwards current message to the given PID
 	Forward(pid *PID)
 
-	AwaitFuture(f *Future, continuation func(res interface{}, err error))
+	//AwaitFuture(f *Future, continuation func(res interface{}, err error))
 }
 
 type ReadonlyMessageHeader = actor.ReadonlyMessageHeader

@@ -1,6 +1,6 @@
 package actor
 
-import "github.com/AsynkronIT/protoactor-go/actor"
+import "github.com/asynkron/protoactor-go/actor"
 
 type Actor interface {
 	Receive(c Context)
@@ -64,7 +64,7 @@ func (props *Props) WithReceiverMiddleware(middleware ...ReceiverMiddleware) *Pr
 		}
 	}
 
-	return &Props{props.Props.WithReceiverMiddleware(m...)}
+	return &Props{props.Props.Configure(actor.WithReceiverMiddleware(m...))}
 }
 
 type ActorFunc = ReceiveFunc
