@@ -1,10 +1,12 @@
 package actor
 
-import "github.com/asynkron/protoactor-go/log"
-
-var (
-	plog = log.New(log.DebugLevel, "[ACTOR]")
+import (
+	"log/slog"
 )
+
+// var (
+// 	plog = slog.New(log.DebugLevel, "[ACTOR]")
+// )
 
 type Behavior []ReceiveFunc
 
@@ -30,7 +32,7 @@ func (b *Behavior) Receive(context Context) {
 	if ok {
 		behavior(context)
 	} else {
-		plog.Error("empty behavior called", log.Stringer("pid", context.Self()))
+		slog.Error("empty behavior called", "pid", context.Self())
 	}
 }
 
